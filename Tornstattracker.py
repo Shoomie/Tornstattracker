@@ -1,14 +1,25 @@
 import requests
 import sqlite3
 import time
-import os
+import os # <--- Make sure os is imported
 from datetime import datetime, timezone
+import platform # <--- Import platform module
 
 # --- Configuration ---
 DATABASE_FILE = "faction_data.db"  # Single DB for everything
 API_BASE_URL = "https://api.torn.com/user/"
 RATE_LIMIT_DELAY = 0.7
 USER_AGENT = "PythonMenuCrimeTracker/1.1 (FactionOfficerTool)" # Version bump
+
+# --- Clear Screen Function ---
+def clear_screen():
+    """Clears the terminal screen."""
+    # Check the operating system
+    system_name = platform.system()
+    if system_name == "Windows":
+        os.system('cls')
+    else: # Assume Linux or macOS
+        os.system('clear')
 
 # --- Database Functions ---
 
@@ -502,10 +513,11 @@ def show_results():
 
 def display_main_menu():
     """Prints the main menu options."""
+    # Displaying the menu remains the same
     print("\n===== Torn Faction Crime Tracker Menu =====")
     print(" 1. Add / Update Member")
     print(" 2. Remove Member")
-    print(" 3. List All Members (and Edit/Delete)") # Updated text
+    print(" 3. List All Members (and Edit/Delete)")
     print(" 4. Update All Member Stats (Fetch from API)")
     print(" 5. Show Crime Results (Since Last Update)")
     print(" 0. Exit")
@@ -514,15 +526,17 @@ def display_main_menu():
 def main_loop():
     """Runs the main interactive menu loop."""
     while True:
+        clear_screen() # <--- ADD THIS LINE to clear before showing menu
         display_main_menu()
         choice = input("Enter your choice (0-5): ").strip()
 
+        # --- Execute chosen action ---
         if choice == '1':
             add_member_interactive()
         elif choice == '2':
             remove_member_interactive()
         elif choice == '3':
-            list_members() # Now includes edit/delete options
+            list_members()
         elif choice == '4':
             update_all_stats()
         elif choice == '5':
@@ -531,10 +545,18 @@ def main_loop():
             print("\nExiting program. Goodbye!")
             break
         else:
+            # No action taken, just show error message
             print("\n!!! Invalid choice. Please enter a number between 0 and 5. !!!")
+            # Optional short pause after invalid choice before clearing again
+            # time.sleep(1.5)
+            # Continue directly to clear screen and show menu again
+            continue # Go directly to the next loop iteration
 
+        # --- Pause after a valid action (except exit) ---
         if choice != '0':
+             # This input will happen *after* the action function prints its output
              input("\nPress Enter to return to the menu...")
+             # The loop will then restart, clear the screen, and show the menu
 
 
 # --- Main Execution ---
